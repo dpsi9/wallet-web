@@ -1,0 +1,9 @@
+1. Generate a random seed phrase for themselves.
+2. Create multiple solana wallets (ETH wallets maybe?)
+3. Let the user see their Solana balance.
+4. Let the user see their USDC/other token balances.
+
+Bonus
+
+1. User can send SOL to someone else
+2. User can swap their SOL for some other token (USDC)
