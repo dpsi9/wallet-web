@@ -1,8 +1,8 @@
+import { TokenData } from "@/types/tokenData";
 import { getMintInfo } from "./getMintInfo";
 
 export async function classifyToken(asset: any) {
   if (asset.interface !== "FungibleToken") return null;
-
   const info = asset.token_info;
   const meta = asset.content?.metadata;
 
@@ -30,6 +30,6 @@ export async function classifyToken(asset: any) {
     symbol: meta.symbol,
     balance,
     decimals: info.decimals,
-    trusted,
+    verified: trusted,
   };
 }

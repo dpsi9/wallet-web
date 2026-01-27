@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@solana-program/token-2022": "^0.6.1",
     "@solana/kit": "^5.4.0",
     "axios": "^1.13.3",
     "bip39": "^3.1.0",
