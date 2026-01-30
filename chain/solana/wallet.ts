@@ -92,3 +92,52 @@ export class SolanaHDWallet {
     }
   }
 }
+
+export class WalletManager {
+  private hdWallet: SolanaHDWallet | null = null;
+
+  // initialize with new or existing wallet
+  initialize(mnemonic?: string): void {
+    this.hdWallet = mnemonic ? SolanaHDWallet.recover(mnemonic) : new SolanaHDWallet();
+  }
+
+  // get curr mnemonic
+  getMnemonic(): string {
+    if (!this.hdWallet) {
+      throw new Error("Wallet not initialized");
+    } else {
+      return this.hdWallet.getMnemonic();
+    }
+  }
+
+  // get primary wallet account = 0, index = 0
+  getPrimaryWallet(): Keypair {
+    if (!this.hdWallet) {
+      throw new Error("Wallet not initialized");
+    }
+    return this.hdWallet.deriveKeypair(0, 0);
+  }
+
+  // get multiple wallets for dashboard
+  getWalletDashboard(count: number = 5) {
+    if (!this.hdWallet) {
+      throw new Error("Wallet not initialized");
+    }
+
+    const wallets = this.hdWallet.generateMultipleWallets(count);
+
+    return wallets.map((wallet, i) => ({
+      id: i,
+      name: `Wallet ${i + 1}`,
+      publicKey: wallet.publicKey,
+      shortAddress: `${wallet.publicKey.slice(0, 4)}...${wallet.publicKey.slice(-4)}`,
+      derivationPath: `m/44'/501'/0'/${i}`,
+    }));
+  }
+
+  clear(): void {
+    this.hdWallet = null;
+  }
+}
+
+export type { Keypair };
