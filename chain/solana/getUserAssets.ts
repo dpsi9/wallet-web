@@ -1,10 +1,13 @@
-import { rpc, rpcSubscriptions } from "@/chain/solana";
+import { rpc, rpcSubscriptions } from "@/chain/solana/solana";
 import { Address } from "@solana/kit";
 import axios from "axios";
 import { classifyToken } from "./tokenFilter";
+import { TokenData } from "@/types/tokenData";
 
-export async function getUserAssets(publicKey: Address) {
-  console.log(publicKey)
+export async function getUserAssets(
+  publicKey: Address,
+): Promise<{ trusted: TokenData[]; untrusted: TokenData[] }> {
+  console.log(publicKey);
   const { data } = await axios.post(
     process.env.RPC_URL!,
     {
@@ -32,13 +35,10 @@ export async function getUserAssets(publicKey: Address) {
     },
   );
 
-
   const assets = data.result.items as any[];
 
   const trusted = [];
   const untrusted = [];
-
-
 
   for (const asset of assets) {
     const token = await classifyToken(asset);

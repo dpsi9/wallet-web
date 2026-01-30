@@ -1,7 +1,7 @@
 import { TokenData } from "@/types/tokenData";
 import { getMintInfo } from "./getMintInfo";
 
-export async function classifyToken(asset: any) {
+export async function classifyToken(asset: any): Promise<TokenData | null> {
   if (asset.interface !== "FungibleToken") return null;
   const info = asset.token_info;
   const meta = asset.content?.metadata;
