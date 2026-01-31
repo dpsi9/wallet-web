@@ -9,22 +9,26 @@ import {
   setTransactionMessageFeePayerSigner,
   setTransactionMessageLifetimeUsingBlockhash,
   signTransactionMessageWithSigners,
-  sendAndConfirmTransactionFactory,
   getSignatureFromTransaction,
   compileTransaction,
   TransactionMessageBytesBase64,
-  assertIsTransactionWithBlockhashLifetime,
+  getBase64EncodedWireTransaction,
 } from "@solana/kit";
-import { createClient } from "./client";
+import { createClient, type Network } from "./client";
 
-export async function sendSol(wallet: Uint8Array, receiver: string, amountLamports: bigint) {
+export async function sendSol(
+  wallet: Uint8Array,
+  receiver: string,
+  amountLamports: bigint,
+  network: Network = "mainnet"
+) {
   if (amountLamports <= 0n) {
     throw new Error("Invalid amount");
   }
 
   const signer = await createKeyPairSignerFromBytes(wallet);
   const receiverAddress = address(receiver);
-  const client = createClient();
+  const client = createClient(network);
 
   const { value: balance } = await client.rpc.getBalance(signer.address).send();
 
@@ -63,15 +67,31 @@ export async function sendSol(wallet: Uint8Array, receiver: string, amountLampor
   }
 
   const signedTx = await signTransactionMessageWithSigners(txMessage);
-  assertIsTransactionWithBlockhashLifetime(signedTx);
-
-  const sendAndConfirm = sendAndConfirmTransactionFactory({
-    rpc: client.rpc,
-    rpcSubscriptions: client.rpcSubscriptions,
-  });
-
-  await sendAndConfirm(signedTx, { commitment: "confirmed" });
-
   const signature = getSignatureFromTransaction(signedTx);
-  return signature;
+
+  // Send transaction using sendTransaction RPC (no WebSocket needed)
+  const encodedTx = getBase64EncodedWireTransaction(signedTx);
+  await client.rpc.sendTransaction(encodedTx, {
+    encoding: 'base64',
+    skipPreflight: false,
+    preflightCommitment: 'confirmed',
+  }).send();
+
+  // Poll for confirmation instead of using WebSocket
+  const maxRetries = 30;
+  for (let i = 0; i < maxRetries; i++) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const status = await client.rpc.getSignatureStatuses([signature]).send();
+    const result = status.value[0];
+    if (result) {
+      if (result.err) {
+        throw new Error(`Transaction failed: ${JSON.stringify(result.err)}`);
+      }
+      if (result.confirmationStatus === 'confirmed' || result.confirmationStatus === 'finalized') {
+        return signature;
+      }
+    }
+  }
+
+  throw new Error('Transaction confirmation timeout');
 }

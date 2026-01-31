@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { useWalletContext } from "@/contexts/WalletContext";
 import { AlertCircle, Eye, EyeOff, Copy, Check } from "lucide-react";
@@ -16,12 +17,9 @@ export function SeedPhrase({ mode }: SeedPhraseProps) {
   const [holdProgress, setHoldProgress] = useState(0);
   const [copied, setCopied] = useState(false);
   const [importPhrase, setImportPhrase] = useState('');
+  const [mnemonic, setMnemonic] = useState('');
 
-  // Generate mock seed phrase for creation
-  const words = mode === 'create' ? [
-    'abandon', 'ability', 'able', 'about', 'above', 'absent',
-    'absorb', 'abstract', 'absurd', 'abuse', 'access', 'accident'
-  ] : [];
+  const words = mode === 'create' && mnemonic ? mnemonic.split(' ') : [];
 
   const handleReveal = () => {
     let interval: NodeJS.Timeout;
@@ -34,6 +32,10 @@ export function SeedPhrase({ mode }: SeedPhraseProps) {
       setHoldProgress(progress);
 
       if (progress >= 100) {
+        if (!mnemonic) {
+          const phrase = createNewWallet();
+          setMnemonic(phrase);
+        }
         setRevealed(true);
         clearInterval(interval);
         setHoldProgress(0);
@@ -47,26 +49,44 @@ export function SeedPhrase({ mode }: SeedPhraseProps) {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(words.join(" "));
+    navigator.clipboard.writeText(mnemonic);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleContinue = () => {
     if (mode === 'create') {
-      createNewWallet();
+      if (!mnemonic) {
+        const phrase = createNewWallet();
+        setMnemonic(phrase);
+      }
       setCurrentView('dashboard');
     } else {
-      recoverWallet(importPhrase);
+      recoverWallet(importPhrase.trim());
       setCurrentView('dashboard');
     }
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 flex items-center justify-center">
-      <div className="w-full max-w-150 space-y-6">
+    <motion.div
+      className="min-h-screen bg-background p-4 flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35 }}
+    >
+      <motion.div
+        className="w-full max-w-150 space-y-6"
+        initial={{ y: 12, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+      >
         {/* Warning */}
-        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex gap-3">
+        <motion.div
+          className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex gap-3"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05, duration: 0.25 }}
+        >
           <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
           <div className="text-sm">
             <p className="text-destructive font-medium mb-1">Critical Security Information</p>
@@ -74,12 +94,17 @@ export function SeedPhrase({ mode }: SeedPhraseProps) {
               Anyone with this phrase owns your funds. Never share it. Write it down offline.
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {mode === 'create' ? (
           <>
             {/* Seed Phrase Grid */}
-            <div className="bg-card border border-border rounded-lg p-6">
+            <motion.div
+              className="bg-card border border-border rounded-lg p-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1, duration: 0.25 }}
+            >
               {!revealed ? (
                 <div className="text-center py-12 space-y-4">
                   <div className="flex justify-center">
@@ -92,20 +117,28 @@ export function SeedPhrase({ mode }: SeedPhraseProps) {
               ) : (
                 <div className="grid grid-cols-3 gap-3">
                   {words.map((word, index) => (
-                    <div
+                    <motion.div
                       key={index}
                       className="bg-secondary border border-border rounded px-3 py-2 font-mono text-sm"
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.02 * index, duration: 0.2 }}
                     >
                       <span className="text-muted-foreground mr-2">{index + 1}.</span>
                       <span className="text-foreground">{word}</span>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Actions */}
-            <div className="space-y-3">
+            <motion.div
+              className="space-y-3"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.25 }}
+            >
               {!revealed ? (
                 <Button
                   className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 relative overflow-hidden"
@@ -127,6 +160,7 @@ export function SeedPhrase({ mode }: SeedPhraseProps) {
                   <Button
                     onClick={handleCopy}
                     variant="outline"
+                    disabled={!mnemonic}
                     className="w-full h-12 border-border hover:bg-secondary"
                   >
                     {copied ? (
@@ -162,12 +196,17 @@ export function SeedPhrase({ mode }: SeedPhraseProps) {
                   </Button>
                 </>
               )}
-            </div>
+            </motion.div>
           </>
         ) : (
           <>
             {/* Import Area */}
-            <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+            <motion.div
+              className="bg-card border border-border rounded-lg p-6 space-y-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1, duration: 0.25 }}
+            >
               <div>
                 <label className="text-sm text-muted-foreground mb-2 block">
                   Enter your 12 or 24 word recovery phrase
@@ -179,12 +218,17 @@ export function SeedPhrase({ mode }: SeedPhraseProps) {
                   className="w-full h-32 bg-secondary border border-border rounded px-3 py-2 font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
-            </div>
+            </motion.div>
 
-            <div className="space-y-3">
+            <motion.div
+              className="space-y-3"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.25 }}
+            >
               <Button
                 onClick={handleContinue}
-                disabled={importPhrase.split(' ').filter(w => w).length < 12}
+                disabled={importPhrase.trim().split(/\s+/).filter((w) => w).length < 12}
                 className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Import Wallet
@@ -196,7 +240,7 @@ export function SeedPhrase({ mode }: SeedPhraseProps) {
               >
                 Cancel
               </Button>
-            </div>
+            </motion.div>
           </>
         )}
 
@@ -209,7 +253,7 @@ export function SeedPhrase({ mode }: SeedPhraseProps) {
             Cancel
           </Button>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

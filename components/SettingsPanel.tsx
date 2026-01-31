@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { useWalletContext } from "@/contexts/WalletContext";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -26,11 +27,21 @@ export function SettingsPanel() {
   };
 
   return (
-    <div className="max-w-200 mx-auto space-y-6">
+    <motion.div
+      className="max-w-200 mx-auto space-y-6"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <h2 className="text-xl font-semibold">Settings</h2>
 
       {/* Security Section */}
-      <div className="bg-card border border-border rounded-lg p-6 space-y-6">
+      <motion.div
+        className="bg-card border border-border rounded-lg p-6 space-y-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.05, duration: 0.25 }}
+      >
         <h3 className="font-medium flex items-center gap-2">
           <Lock className="w-5 h-5" />
           Security
@@ -88,10 +99,15 @@ export function SettingsPanel() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Network Section */}
-      <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+      <motion.div
+        className="bg-card border border-border rounded-lg p-6 space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.08, duration: 0.25 }}
+      >
         <h3 className="font-medium">Network</h3>
 
         <div>
@@ -106,10 +122,15 @@ export function SettingsPanel() {
             </SelectContent>
           </Select>
         </div>
-      </div>
+      </motion.div>
 
       {/* Appearance Section */}
-      <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+      <motion.div
+        className="bg-card border border-border rounded-lg p-6 space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.12, duration: 0.25 }}
+      >
         <h3 className="font-medium">Appearance</h3>
 
         <div>
@@ -141,10 +162,15 @@ export function SettingsPanel() {
             </SelectContent>
           </Select>
         </div>
-      </div>
+      </motion.div>
 
       {/* Advanced Section */}
-      <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+      <motion.div
+        className="bg-card border border-border rounded-lg p-6 space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.16, duration: 0.25 }}
+      >
         <h3 className="font-medium">Advanced</h3>
 
         <div>
@@ -172,10 +198,15 @@ export function SettingsPanel() {
             onCheckedChange={setSimulationEnabled}
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* App Info */}
-      <div className="bg-card border border-border rounded-lg p-6">
+      <motion.div
+        className="bg-card border border-border rounded-lg p-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.25 }}
+      >
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Version</span>
@@ -186,7 +217,7 @@ export function SettingsPanel() {
             <span className="font-mono">20260128</span>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

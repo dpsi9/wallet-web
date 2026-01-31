@@ -1,7 +1,8 @@
 import { TokenData } from "@/types/tokenData";
 import { getMintInfo } from "./getMintInfo";
+import type { Network } from "./client";
 
-export async function classifyToken(asset: any): Promise<TokenData | null> {
+export async function classifyToken(asset: any, network: Network = "mainnet"): Promise<TokenData | null> {
   if (asset.interface !== "FungibleToken") return null;
   const info = asset.token_info;
   const meta = asset.content?.metadata;
@@ -17,7 +18,7 @@ export async function classifyToken(asset: any): Promise<TokenData | null> {
 
   if (banned.some((w) => text.includes(w))) return null;
 
-  const mintInfo = await getMintInfo(asset.id);
+  const mintInfo = await getMintInfo(asset.id, network);
 
   const hasMintAuthority = mintInfo.mintAuthority !== null;
   const hasFreezeAuthority = mintInfo.freezeAuthority != null;

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { useWalletContext } from "@/contexts/WalletContext";
 import {
   ArrowUpRight,
@@ -59,14 +60,24 @@ export function ActivityList() {
   };
 
   return (
-    <div className="space-y-4">
+    <motion.div
+      className="space-y-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.25 }}
+    >
       {!isInitialized && (
         <div className="bg-card border border-border rounded-lg p-12 text-center">
           <p className="text-muted-foreground">Create or import a wallet to view activity</p>
         </div>
       )}
 
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
+      <motion.div
+        className="bg-card border border-border rounded-lg overflow-hidden"
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+      >
         {transactions.map((tx, index) => (
           <div key={tx.id}>
             <button
@@ -157,13 +168,18 @@ export function ActivityList() {
             {index < transactions.length - 1 && <div className="border-b border-border" />}
           </div>
         ))}
-      </div>
+      </motion.div>
 
       {isInitialized && transactions.length === 0 && (
-        <div className="bg-card border border-border rounded-lg p-12 text-center">
+        <motion.div
+          className="bg-card border border-border rounded-lg p-12 text-center"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
           <p className="text-muted-foreground">No transactions yet</p>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

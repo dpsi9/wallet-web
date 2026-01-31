@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { useWalletContext } from "@/contexts/WalletContext";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Loader2 } from "lucide-react";
 
 export function SendFlow() {
-  const { activeWallet, tokens, isInitialized } = useWalletContext();
+  const { activeWallet, tokens, isInitialized, sendTransaction, network } = useWalletContext();
   const [step, setStep] = useState<"recipient" | "amount" | "review" | "success">("recipient");
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
@@ -17,6 +18,8 @@ export function SendFlow() {
   const [selectedToken, setSelectedToken] = useState(defaultToken);
   const [slideProgress, setSlideProgress] = useState(0);
   const [txHash, setTxHash] = useState('');
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     if (!verifiedTokens.find((t) => t.symbol === selectedToken)) {
@@ -26,21 +29,31 @@ export function SendFlow() {
 
   if (!isInitialized) {
     return (
-      <div className="max-w-150 mx-auto space-y-6">
+      <motion.div
+        className="max-w-150 mx-auto space-y-6"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+      >
         <div className="bg-card border border-border rounded-lg p-6 text-center text-muted-foreground">
           Create or import a wallet to send tokens.
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   if (!activeWallet || verifiedTokens.length === 0) {
     return (
-      <div className="max-w-150 mx-auto space-y-6">
+      <motion.div
+        className="max-w-150 mx-auto space-y-6"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+      >
         <div className="bg-card border border-border rounded-lg p-6 text-center text-muted-foreground">
           No verified tokens available to send.
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -62,12 +75,9 @@ export function SendFlow() {
       setSlideProgress(progress);
 
       if (progress >= 100) {
-        // Simulate transaction
-        const hash = generateTxHash();
-        setTxHash(hash);
-        setStep('success');
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
+        handleSendTransaction();
       }
     };
 
@@ -81,23 +91,50 @@ export function SendFlow() {
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  const generateTxHash = () => {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789";
-    let hash = "";
-    for (let i = 0; i < 88; i++) {
-      hash += chars.charAt(Math.floor(Math.random() * chars.length));
+  const handleSendTransaction = async () => {
+    if (selectedToken !== 'SOL') {
+      setSendError('Only SOL transfers are currently supported');
+      setSlideProgress(0);
+      return;
     }
-    return hash;
+
+    setIsSending(true);
+    setSendError(null);
+    
+    try {
+      const amountNum = parseFloat(amount);
+      const amountLamports = BigInt(Math.floor(amountNum * 1e9));
+      
+      const signature = await sendTransaction(recipient, amountLamports);
+      setTxHash(signature);
+      setStep('success');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Transaction failed';
+      setSendError(errorMessage);
+      setSlideProgress(0);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const isValidAddress = recipient.length >= 32;
 
   return (
-    <div className="max-w-150 mx-auto space-y-6">
+    <motion.div
+      className="max-w-150 mx-auto space-y-6"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <h2 className="text-xl font-semibold">Send {selectedToken}</h2>
 
       {step === 'recipient' && (
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
           <div className="bg-card border border-border rounded-lg p-6 space-y-4">
             <div>
               <label className="text-sm text-muted-foreground mb-2 block">Recipient Address</label>
@@ -121,11 +158,16 @@ export function SendFlow() {
             Continue
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
-        </div>
+        </motion.div>
       )}
 
       {step === 'amount' && (
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
           <div className="bg-card border border-border rounded-lg p-6 space-y-4">
             <div>
               <label className="text-sm text-muted-foreground mb-2 block">Token</label>
@@ -199,15 +241,20 @@ export function SendFlow() {
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {step === 'review' && (
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
           <div className="bg-card border border-border rounded-lg p-6 space-y-4">
             <div>
               <p className="text-sm text-muted-foreground mb-1">Network</p>
-              <p className="font-medium">Solana Mainnet</p>
+              <p className="font-medium">Solana {network === 'devnet' ? 'Devnet' : 'Mainnet'}</p>
             </div>
             <div className="border-t border-border pt-4">
               <p className="text-sm text-muted-foreground mb-1">Recipient</p>
@@ -229,38 +276,63 @@ export function SendFlow() {
             </div>
           </div>
 
+          {sendError && (
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-sm text-destructive">
+              {sendError}
+            </div>
+          )}
+
           <div className="bg-card border border-border rounded-lg p-4">
-            <button
-              onMouseDown={handleSlideToSend}
-              className="relative w-full h-14 bg-secondary rounded-lg overflow-hidden"
-            >
-              <div
-                className="absolute inset-0 bg-primary transition-all"
-                style={{ width: `${slideProgress}%` }}
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-sm font-medium">
-                  {slideProgress < 100 ? 'Slide to Send →' : 'Sending...'}
-                </span>
+            {isSending ? (
+              <div className="flex items-center justify-center h-14 gap-2">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span className="text-sm font-medium">Sending transaction...</span>
               </div>
-            </button>
-            <p className="text-xs text-center text-muted-foreground mt-2">
-              Slide to confirm transaction
-            </p>
+            ) : (
+              <>
+                <button
+                  onMouseDown={handleSlideToSend}
+                  className="relative w-full h-14 bg-secondary rounded-lg overflow-hidden"
+                  disabled={isSending}
+                >
+                  <div
+                    className="absolute inset-0 bg-primary transition-all"
+                    style={{ width: `${slideProgress}%` }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-sm font-medium">
+                      {slideProgress < 100 ? 'Slide to Send →' : 'Sending...'}
+                    </span>
+                  </div>
+                </button>
+                <p className="text-xs text-center text-muted-foreground mt-2">
+                  Slide to confirm transaction
+                </p>
+              </>
+            )}
           </div>
 
           <Button
-            onClick={() => setStep('amount')}
+            onClick={() => {
+              setStep('amount');
+              setSendError(null);
+            }}
             variant="ghost"
             className="w-full text-muted-foreground hover:text-foreground"
+            disabled={isSending}
           >
             Cancel
           </Button>
-        </div>
+        </motion.div>
       )}
 
       {step === 'success' && (
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
           <div className="bg-card border border-border rounded-lg p-8 text-center space-y-4">
             <div className="flex justify-center">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
@@ -285,13 +357,14 @@ export function SendFlow() {
               setRecipient('');
               setAmount('');
               setSlideProgress(0);
+              setSendError(null);
             }}
             className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90"
           >
             Send Another Transaction
           </Button>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

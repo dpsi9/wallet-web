@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { useWalletContext } from "@/contexts/WalletContext";
 import type { TokenData } from "@/types/tokenData";
 import { Button } from "./ui/button";
@@ -20,7 +21,12 @@ export function TokenList({ onSend }: TokenListProps) {
   const truncateAddress = (addr: string) => `${addr.slice(0, 6)}...${addr.slice(-6)}`;
 
   return (
-    <div className="space-y-4">
+    <motion.div
+      className="space-y-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.25 }}
+    >
       {isInitialized && tokens.length === 0 && (
         <div className="bg-card border border-border rounded-lg p-6 text-center text-sm text-muted-foreground">
           No token data available yet.
@@ -35,7 +41,12 @@ export function TokenList({ onSend }: TokenListProps) {
 
       {/* Verified Tokens Table */}
       {verifiedTokens.length > 0 && (
-        <div className="bg-card border border-border rounded-lg overflow-hidden">
+        <motion.div
+          className="bg-card border border-border rounded-lg overflow-hidden"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+        >
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="border-b border-border bg-secondary/50">
@@ -47,9 +58,12 @@ export function TokenList({ onSend }: TokenListProps) {
               </thead>
               <tbody>
                 {verifiedTokens.map((token, index) => (
-                  <tr
+                  <motion.tr
                     key={token.mint}
                     className={`${index !== verifiedTokens.length - 1 ? "border-b border-border" : ""} hover:bg-secondary/30 transition-colors`}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.02 * index, duration: 0.2 }}
                   >
                     <td className="px-6 py-4">
                       <div>
@@ -73,17 +87,22 @@ export function TokenList({ onSend }: TokenListProps) {
                         Send
                       </Button>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Unverified Tokens */}
       {unverifiedTokens.length > 0 && (
-        <div className="space-y-2">
+        <motion.div
+          className="space-y-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.2 }}
+        >
           <button
             onClick={() => setShowUnverified(!showUnverified)}
             className="w-full flex items-center justify-between px-4 py-2 bg-card border border-border rounded-lg hover:bg-secondary/30 transition-colors"
@@ -99,14 +118,22 @@ export function TokenList({ onSend }: TokenListProps) {
           </button>
 
           {showUnverified && (
-            <div className="bg-card border border-border rounded-lg overflow-hidden opacity-60">
+            <motion.div
+              className="bg-card border border-border rounded-lg overflow-hidden opacity-60"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              transition={{ duration: 0.25 }}
+            >
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <tbody>
                     {unverifiedTokens.map((token, index) => (
-                      <tr
+                      <motion.tr
                         key={token.mint}
                         className={`${index !== unverifiedTokens.length - 1 ? "border-b border-border" : ""}`}
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.02 * index, duration: 0.2 }}
                       >
                         <td className="px-6 py-4">
                           <div>
@@ -129,15 +156,15 @@ export function TokenList({ onSend }: TokenListProps) {
                             Send
                           </Button>
                         </td>
-                      </tr>
+                      </motion.tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
