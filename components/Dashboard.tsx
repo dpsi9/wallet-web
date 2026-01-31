@@ -80,15 +80,15 @@ export function Dashboard() {
 
   return (
     <motion.div
-      className="min-h-screen bg-[#0a0a0c] flex"
+      className="min-h-screen bg-[#0a0a0c] flex flex-col md:flex-row"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Sidebar */}
-      <aside className="w-60 bg-[#0f0f12] border-r border-white/5 flex flex-col">
+      {/* Sidebar (hidden on mobile) */}
+      <aside className="hidden md:flex w-60 bg-[#0f0f12] border-r border-white/5 flex-col overflow-x-auto md:overflow-visible">
         {/* Branding */}
-        <div className="p-5 pb-6">
+        <div className="p-4 md:p-5 pb-4 md:pb-6">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/15 border border-primary/25">
               <Wallet className="w-4.5 h-4.5 text-primary" />
@@ -98,7 +98,7 @@ export function Dashboard() {
         </div>
 
         {/* Wallet Selector */}
-        <div className="px-4 pb-5">
+        <div className="px-3 md:px-4 pb-4 md:pb-5">
           <button className="w-full bg-[#16161a] hover:bg-[#1a1a1f] border border-white/5 rounded-xl p-3.5 transition-colors text-left">
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
@@ -112,7 +112,7 @@ export function Dashboard() {
           </button>
 
           {/* Action Buttons */}
-          <div className="flex gap-2 mt-3">
+          <div className="flex gap-2 mt-2 md:mt-3">
             <Button
               onClick={handleAddWallet}
               size="sm"
@@ -142,7 +142,7 @@ export function Dashboard() {
         </div>
 
         {/* Navigation */}
-        <div className="px-4 flex-1">
+        <div className="px-3 md:px-4 flex-1">
           <p className="text-[10px] uppercase tracking-wider text-white/30 mb-3 px-2">Menu</p>
           <nav className="space-y-1">
             {navItems.map((item) => {
@@ -167,7 +167,7 @@ export function Dashboard() {
         </div>
 
         {/* Network Status */}
-        <div className="p-4 mt-auto">
+        <div className="p-3 md:p-4 mt-auto">
           <div className="flex items-center gap-2 px-3 py-2">
             <div className={`w-2 h-2 rounded-full ${network === "mainnet" ? "bg-emerald-400" : "bg-amber-400"}`} />
             <span className="text-xs text-white/50 capitalize">{network === "mainnet" ? "Mainnet" : "Devnet"}</span>
@@ -178,7 +178,7 @@ export function Dashboard() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-h-screen">
         {/* Top Bar */}
-        <header className="h-16 border-b border-white/5 px-6 flex items-center justify-between bg-[#0a0a0c]">
+        <header className="h-14 md:h-16 border-b border-white/5 px-3 md:px-6 flex items-center justify-between bg-[#0a0a0c]">
           <h1 className="text-lg font-semibold text-white">
             {navItems.find(item => item.id === activeTab)?.label || "Dashboard"}
           </h1>
@@ -198,22 +198,22 @@ export function Dashboard() {
         </header>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-auto p-6 bg-[#0a0a0c]">
+        <div className="flex-1 overflow-auto p-3 md:p-6 bg-[#0a0a0c]">
           {activeTab === "dashboard" && (
             <motion.div
-              className="grid grid-cols-3 gap-5"
+              className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25 }}
             >
               {/* Left Column - Balance & Assets */}
-              <div className="col-span-2 space-y-5">
+              <div className="md:col-span-2 space-y-4 md:space-y-5">
                 {/* Total Balance Card */}
-                <div className="bg-[#12121a] border border-white/5 rounded-2xl p-6">
-                  <div className="flex items-start justify-between mb-5">
+                <div className="bg-[#12121a] border border-white/5 rounded-2xl p-4 md:p-6">
+                  <div className="flex items-start justify-between mb-4 md:mb-5">
                     <div>
                       <p className="text-sm text-white/50 mb-2">Total Balance</p>
-                      <p className="text-4xl font-bold text-white">
+                      <p className="text-2xl md:text-4xl font-bold text-white">
                         {solBalance.toLocaleString("en-US", { minimumFractionDigits: 4, maximumFractionDigits: 4 })} SOL
                       </p>
                     </div>
@@ -223,7 +223,7 @@ export function Dashboard() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex gap-3">
+                  <div className="flex gap-2 md:gap-3">
                     <Button
                       onClick={() => setActiveTab("send")}
                       className="flex-1 h-12 bg-[#1a1a24] hover:bg-[#22222e] text-white border border-white/5 font-medium"
@@ -242,9 +242,9 @@ export function Dashboard() {
                 </div>
 
                 {/* Assets Section */}
-                <div className="bg-[#12121a] border border-white/5 rounded-2xl p-5">
+                <div className="bg-[#12121a] border border-white/5 rounded-2xl p-4 md:p-5">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-base font-semibold text-white">Assets</h3>
+                    <h3 className="text-base md:text-base font-semibold text-white">Assets</h3>
                     <button 
                       onClick={() => setActiveTab("tokens")}
                       className="text-xs text-primary hover:text-primary/80 transition-colors"
@@ -253,23 +253,23 @@ export function Dashboard() {
                     </button>
                   </div>
 
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                     {/* SOL Token */}
-                    <div className="flex items-center justify-between p-3.5 bg-[#16161e] rounded-xl hover:bg-[#1a1a24] transition-colors">
+                    <div className="flex items-center justify-between p-2.5 md:p-3.5 bg-[#16161e] rounded-xl hover:bg-[#1a1a24] transition-colors">
                       <div className="flex items-center gap-3">
                         <div>
                           <p className="font-medium text-white text-sm">Solana</p>
                           <p className="text-xs text-white/40">SOL</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2 md:gap-4">
                         <div className="text-right">
                           <p className="font-medium text-white text-sm">{solBalance.toFixed(4)} SOL</p>
                         </div>
                         <Button
                           onClick={() => setActiveTab("send")}
                           size="sm"
-                          className="h-8 px-4 bg-[#1e1e28] hover:bg-[#26263a] text-white text-xs border border-white/5"
+                          className="h-8 px-3 md:px-4 bg-[#1e1e28] hover:bg-[#26263a] text-white text-xs border border-white/5"
                         >
                           Send
                         </Button>
@@ -278,14 +278,14 @@ export function Dashboard() {
 
                     {/* Other verified tokens */}
                     {tokens.filter(t => t.symbol !== "SOL" && t.verified).slice(0, 3).map(token => (
-                      <div key={token.mint} className="flex items-center justify-between p-3.5 bg-[#16161e] rounded-xl hover:bg-[#1a1a24] transition-colors">
+                      <div key={token.mint} className="flex items-center justify-between p-2.5 md:p-3.5 bg-[#16161e] rounded-xl hover:bg-[#1a1a24] transition-colors">
                         <div className="flex items-center gap-3">
                           <div>
                             <p className="font-medium text-white text-sm">{token.name}</p>
                             <p className="text-xs text-white/40">{token.symbol}</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 md:gap-4">
                           <div className="text-right">
                             <p className="font-medium text-white text-sm">{token.balance.toFixed(4)}</p>
                           </div>
@@ -304,9 +304,9 @@ export function Dashboard() {
               </div>
 
               {/* Right Column - Quick Actions & Activity */}
-              <div className="space-y-5">
+              <div className="space-y-4 md:space-y-5">
                 {/* Quick Actions */}
-                <div className="bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 rounded-2xl p-5">
+                <div className="bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 rounded-2xl p-4 md:p-5">
                   <h3 className="text-sm font-semibold text-white mb-4">Quick Actions</h3>
                   <div className="space-y-2">
                     <button
@@ -324,9 +324,9 @@ export function Dashboard() {
                 </div>
 
                 {/* Recent Activity */}
-                <div className="bg-[#12121a] border border-white/5 rounded-2xl p-5">
+                <div className="bg-[#12121a] border border-white/5 rounded-2xl p-4 md:p-5">
                   <h3 className="text-sm font-semibold text-white mb-4">Recent Activity</h3>
-                  <div className="py-6 text-center">
+                  <div className="py-4 md:py-6 text-center">
                     <p className="text-sm text-white/30">No transactions yet</p>
                   </div>
                   <button
@@ -339,7 +339,7 @@ export function Dashboard() {
 
                 {/* Derived Wallets */}
                 {wallets.length > 0 && (
-                  <div className="bg-[#12121a] border border-white/5 rounded-2xl p-5">
+                  <div className="bg-[#12121a] border border-white/5 rounded-2xl p-4 md:p-5">
                     <button
                       onClick={() => setShowWallets((prev) => !prev)}
                       className="w-full flex items-center justify-between text-sm"
@@ -352,13 +352,13 @@ export function Dashboard() {
                     </button>
 
                     {showWallets && (
-                      <div className="mt-4 space-y-2">
+                      <div className="mt-2 md:mt-4 space-y-2">
                         {wallets.map((wallet) => {
                           const isRevealed = revealedWallets[wallet.publicKey];
                           return (
                             <div
                               key={wallet.publicKey}
-                              className="p-3 bg-[#16161e] rounded-xl"
+                              className="p-2.5 md:p-3 bg-[#16161e] rounded-xl"
                             >
                               <div className="flex items-center justify-between mb-2">
                                 <p className="text-xs font-medium text-white">Wallet {wallet.index + 1}</p>

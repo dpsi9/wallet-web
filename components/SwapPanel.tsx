@@ -144,12 +144,12 @@ export function SwapPanel() {
   if (!isInitialized) {
     return (
       <motion.div
-        className="max-w-125 mx-auto space-y-6"
+        className="max-w-full sm:max-w-lg mx-auto space-y-4 sm:space-y-6 px-2 sm:px-0"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
       >
-        <div className="bg-card border border-border rounded-lg p-6 text-center text-muted-foreground">
+        <div className="bg-card border border-border rounded-lg p-4 sm:p-6 text-center text-muted-foreground">
           Create or import a wallet to swap tokens.
         </div>
       </motion.div>
@@ -158,15 +158,15 @@ export function SwapPanel() {
 
   return (
     <motion.div
-      className="max-w-125 mx-auto space-y-6"
+      className="max-w-full sm:max-w-lg mx-auto space-y-4 sm:space-y-6 px-2 sm:px-0"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <h2 className="text-xl font-semibold">Swap</h2>
+      <h2 className="text-lg sm:text-xl font-semibold">Swap</h2>
 
       <motion.div
-        className="bg-card border border-border rounded-lg p-6 space-y-4"
+        className="bg-card border border-border rounded-lg p-4 sm:p-6 space-y-3 sm:space-y-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.05, duration: 0.25 }}

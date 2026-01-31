@@ -121,12 +121,12 @@ export function SendFlow() {
 
   return (
     <motion.div
-      className="max-w-150 mx-auto space-y-6"
+      className="max-w-full sm:max-w-lg mx-auto space-y-4 sm:space-y-6 px-2 sm:px-0"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <h2 className="text-xl font-semibold">Send {selectedToken}</h2>
+      <h2 className="text-lg sm:text-xl font-semibold">Send {selectedToken}</h2>
 
       {step === 'recipient' && (
         <motion.div
@@ -135,7 +135,7 @@ export function SendFlow() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+          <div className="bg-card border border-border rounded-lg p-4 sm:p-6 space-y-3 sm:space-y-4">
             <div>
               <label className="text-sm text-muted-foreground mb-2 block">Recipient Address</label>
               <Input
@@ -153,7 +153,7 @@ export function SendFlow() {
           <Button
             onClick={() => setStep('amount')}
             disabled={!isValidAddress}
-            className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            className="w-full h-11 sm:h-12 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
             Continue
             <ArrowRight className="w-4 h-4 ml-2" />
@@ -163,12 +163,12 @@ export function SendFlow() {
 
       {step === 'amount' && (
         <motion.div
-          className="space-y-6"
+          className="space-y-4 sm:space-y-6"
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+          <div className="bg-card border border-border rounded-lg p-4 sm:p-6 space-y-3 sm:space-y-4">
             <div>
               <label className="text-sm text-muted-foreground mb-2 block">Token</label>
               <Select value={selectedToken} onValueChange={setSelectedToken}>
